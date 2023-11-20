@@ -1,3 +1,6 @@
+import re
+
+
 def jaccard_similarity(str1, str2):
     set1 = set(str1)
     set2 = set(str2)
@@ -7,7 +10,7 @@ def jaccard_similarity(str1, str2):
     return similarity
 
 
-def find_similar_words_jaccard(input_word, word_list, threshold):
+def find_similar_words_jaccard(input_word, word_list, threshold: float):
     similar_words = [word for word in word_list if jaccard_similarity(input_word, word) >= threshold]
     return similar_words
 
@@ -42,8 +45,21 @@ def extract_country_from_row(row: str):
 
 def filter_out_garbage(country: str):
     elem_list = country.split()
-    unwanted = ['(e', '(', ')', '(e:']
+    unwanted = ['(e', '(', ')', '(e:', '(f', '(r']
     for elem in elem_list:
-        if elem in unwanted or len(elem) < 2:
+        if elem in unwanted:
             elem_list.remove(elem)
     return ' '.join(elem_list)
+
+
+def matches_pattern(string: str, patterns: list):
+    for pattern in patterns:
+        if re.match(pattern, string):
+            return True
+        else:
+            return False
+
+
+def extract_list_of_countries():
+    pass
+
