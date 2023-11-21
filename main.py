@@ -1,5 +1,5 @@
 from pathlib import Path
-from myfunctions import *
+from myfunctions import extract_country_from_row, filter_out_garbage, find_similar_words_jaccard
 from collections import Counter
 
 
@@ -9,6 +9,9 @@ if __name__ == "__main__":
     files = Path(txt_directory).glob('*.txt')
 
     countries_list = []
+    ultimate_countries_list = []
+    # count_of_lines1 = 0
+    # count_of_lines2 = 0
 
     for file in files:
         with open(file, 'r') as f:
@@ -19,13 +22,15 @@ if __name__ == "__main__":
                 country = extract_country_from_row(line)
                 country = filter_out_garbage(country)
                 countries_list.append(country)
+                # count_of_lines1 += 1
+
+    # re_country_patterns = [r'^(?:[A-Za-z.-]{3,}\s+){0,2}[A-Za-z.-]{3,}$']
 
     countries_counter = Counter(countries_list)
-    filtered_countries = [key for key, value in countries_counter.items() if value > 2]
-    filtered_countries = list(sorted(filter(lambda x: len(x) > 3 and x not in ('cis', 'cls'), filtered_countries)))
+    filtered_countries = sorted([key for key, value in countries_counter.items() if value > 2])
 
-    # print(*filtered_countries, sep='\n')
-    # print(len(filtered_countries))
+    print(len(filtered_countries))
+    print(filtered_countries)
 
     files = Path(txt_directory).glob('*.txt')
     for file in files:
@@ -37,18 +42,28 @@ if __name__ == "__main__":
             matched = []
             no_match = []
             for line in lines[1:]:
+                count_of_lines2 += 1
                 line = line.replace(',', '').lower()
                 country = extract_country_from_row(line)
                 amounts = line.replace(country, '').strip()
                 country = filter_out_garbage(country)
-                country_similar = find_similar_words_jaccard(country, filtered_countries, 0.9)
-                for c in country_similar:
-                    if country in country_similar:
-                        continue
-                    elif country not in country_similar and c in country:
-                        country = f'!{country}--{c}!'
-                    else:
-                        country = f'!{country}!'
+                for elem in country.split():
+                    if elem in filtered_countries:
+                        country = elem
+                country_similar = find_similar_words_jaccard(country, filtered_countries, 0.85)
+                # country_similar_dict = similar_words_with_jaccard_similarity(country, country_similar)
+                if country not in filtered_countries and country_similar:
+                    country = country_similar[0]
+                elif country not in filtered_countries:
+                    print(country, file.name)
+
+                # else:
+                #     for elem in country.split():
+                #         if country_similar:
+                #             country = country_similar[0]
+                #         else:
+                #             country = f'!{country}'
+                ultimate_countries_list.append(country)
                 amounts = filter_out_garbage(amounts)
                 fields = [country] + amounts.split()
                 if len(fields) == len(header_list):
@@ -58,50 +73,12 @@ if __name__ == "__main__":
             text = ','.join(header_list) + '\n' + '\n'.join(matched) + '\n' + '\n'.join(no_match)
             with open(f'input-data/text-files/after-cleaning/{file.name}', 'w') as f_w:
                 f_w.write(text)
-    print(text)
 
-    # countries_list = list(set(countries_list))
-    # countries_bad = [c for c in countries_list if c.startswith('?') and c.endswith('?')]
-    # countries_bad2 = [c for c in countries_list if c.startswith('!') and c.endswith('!')]
-    # countries_list = [c for c in countries_list if not c.startswith('?') and not c.endswith('?') and not c.startswith('!') and not c.endswith('!')]
-    # print(list(sorted(countries_list)))
-    # print(len(countries_list))
-    # print(countries_bad)
-    # print(len(countries_bad))
-    # print(countries_bad2)
-    # print(len(countries_bad2))
+    ultimate_countries_list = list(set(ultimate_countries_list))
+    diff = [x for x in filtered_countries if x not in ultimate_countries_list]
 
-
-    # print(all_countries)
-    # print(len(all_countries))
-    # print(sorted(all_countries))
-    # print(sorted(all_countries, key=len))
-
-    # for file in files:
-    #     with open(file, 'r') as f:
-    #         text = f.read()
-    #         text = remove_empty_lines(text)
-    #         text = 'Country ' + text
-    #         text = text.replace(',', '')
-    #         lines = text.splitlines()
-    #         header = lines[0].split()
-    #         matched = []
-    #         no_match = []
-    #         list_of_countries = []
-    #         for line in lines[1::]:
-    #             country = extract_country_from_row(line)
-    #             list_of_countries.append(country)
-    #             fields = line.split()
-    #             if len(fields) == len(header):
-    #                 matched.append(','.join(fields))
-    #             else:
-    #                 no_match.append(' '.join(fields))
-    #         text = ','.join(header) + '\n' + '\n'.join(matched) + '\n' + '\n'.join(no_match)
-    #
-    #         all_countries += list_of_countries
-    #         all_countries = list(set(map(str.upper, all_countries)))
-    #         all_countries = list(set(map(filter_out_garbage, all_countries)))
-    #         all_countries = list(filter(lambda x: len(x) > 3, all_countries))
-    #
-    #         with open(f'input-data/text-files/after-cleaning/{file.name}', 'w') as f_w:
-    #             f_w.write(text)
+    print(sorted(ultimate_countries_list))
+    print(len(ultimate_countries_list))
+    print(diff)
+    print(count_of_lines1)
+    print(count_of_lines2)

@@ -15,6 +15,11 @@ def find_similar_words_jaccard(input_word, word_list, threshold: float):
     return similar_words
 
 
+def similar_words_with_jaccard_similarity(input_word, word_list):
+    similar_words = {word: round(jaccard_similarity(input_word, word), 3) for word in word_list}
+    return similar_words
+
+
 def remove_empty_lines(text: str):
     lines = text.splitlines()
     non_empty_lines = [line for line in lines if line.strip() != '']
