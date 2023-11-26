@@ -19,7 +19,7 @@ for file in files:
     images = convert_from_path(file)
     for image in images:
         text = pytesseract.image_to_string(image, config='--psm 6')
-        with open(f'input-data/text-files/{file.name[-8:-4]}.txt', 'a') as f:
+        with open(f'input-data/raw-text-files/{file.name[-8:-4]}.txt', 'a') as f:
             f.write(text)
 '''
 def tesseract_pdf_to_txt(pdf_path: str | PathLike[str],

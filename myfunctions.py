@@ -48,11 +48,11 @@ def extract_country_from_row(row: str):
     return country
 
 
-def filter_out_garbage(country: str):
-    elem_list = country.split()
-    unwanted = ['(e', '(', ')', '(e:', '(f', '(r']
+def filter_out_garbage(input_string: str):
+    elem_list = input_string.split()
+    garbage = ['(e', '(', ')', '{', '}', '(e:', '(f', '(r', 'e)', ':', '.', '-', '=', '«=', '»=', '~—']
     for elem in elem_list:
-        if elem in unwanted:
+        if elem in garbage:
             elem_list.remove(elem)
     return ' '.join(elem_list)
 
@@ -65,6 +65,28 @@ def matches_pattern(string: str, patterns: list):
             return False
 
 
-def extract_list_of_countries():
+def join_digits_into_numbers(input_string: str, no_of_columns: int):
+    figures = input_string.split()
+    no_of_columns -= 1
+    if len(figures) == (no_of_columns*2):
+        figures = [figures[i] + figures[i+1] for i in range(0, len(figures), 2)]
+    elif no_of_columns < len(figures) < no_of_columns*2:
+        for i in reversed(range(len(figures))):
+            if len(figures[i]) == 3 and 1 <= len(figures[i-1]) <= 2:
+                figures[i-1] += figures[i]
+                figures.pop(i)
+    while len(figures) < no_of_columns:
+        figures.insert(0, '???')
+
+    return ' '.join(figures)
+
+
+def analyze_amounts(input_string: str, no_of_columns: int):
+    figures = input_string.split()
+    no_of_columns -= 1
+    len_list = [len(s) for s in figures]
+    max_len_figure = max(figures, key=len)
+    # count_max_len_figure =
     pass
+
 
