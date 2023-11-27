@@ -2,3 +2,6 @@
 /.python-version
 /.DS_Store
 /.idea/
+/concatenated_rows.csv
+/filtered_concatenated_rows.csv
+/sample_concatenated_rows.csv
