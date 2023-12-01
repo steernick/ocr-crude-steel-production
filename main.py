@@ -1,31 +1,41 @@
 from pathlib import Path
-from myfunctions import (extract_country_from_row, filter_out_garbage, find_similar_words_jaccard,
-                         join_digits_into_numbers)
+from myfunctions import (is_element_in_string, extract_header, extract_country_from_line, filter_out_garbage,
+                        find_similar_words_jaccard, join_figures_into_numbers)
 from collections import Counter
 import re
-import string
-
 
 if __name__ == "__main__":
 
-    txt_directory = 'input-data/text-files'
+    txt_directory = 'input-data/raw-text-files'
     files = Path(txt_directory).glob('*.txt')
 
     countries_list = []
     ultimate_countries_list = []
+    unwanted_str_list = ['total', 'table', 'includes', 'figure', 'figures', 'statistical', 'steel', 'which', 'estimated',
+                         'crude', 'calculated', 'from', 'excluding', 'included', 'continued', 'eeSSSe']
 
     for file in files:
         with open(file, 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines if line.strip()]
+            lines = [line for line in lines if len(line) > 35]
+            lines = [line for line in lines if not is_element_in_string(line.lower(), unwanted_str_list)]
+            header = extract_header(lines[0])
             for line in lines[1:]:
-                line = line.replace(',', '').lower()
-                country = extract_country_from_row(line)
-                country = filter_out_garbage(country)
-                countries_list.append(country)
+                if not line[0].isalpha():
+                    continue
+                line = re.sub(r'\s*\((.{0,4}?)\)\s*', '    ', line)
+                line = re.sub(r'[^\w\s]', '', line)
+                line = line.strip()
+                country = extract_country_from_line(line).lower()
+                if len(country) > 4:
+                    countries_list.append(country)
 
     countries_counter = Counter(countries_list)
-    filtered_countries = sorted([key for key, value in countries_counter.items() if value > 2])
+    filtered_countries = sorted([key for key, value in countries_counter.items() if value > 4])
+    print(countries_counter)
+    print(len(filtered_countries))
+
     final_correct_countries = {
         'accession cts': 'accession countries',
         'byelorussia': 'belarus',
@@ -57,24 +67,28 @@ if __name__ == "__main__":
         'viet nam': 'vietnam'
     }
 
-    print(len(filtered_countries))
-    # print(filtered_countries)
-
     files = Path(txt_directory).glob('*.txt')
+
     for file in files:
         with open(file, 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines if line.strip()]
-            header = lines[0] = 'Country ' + lines[0]
+            lines = [line for line in lines if len(line) > 35]
+            lines = [line for line in lines if not is_element_in_string(line.lower(), unwanted_str_list)]
+            header = extract_header(lines[0])
             header_list = header.split()
             no_of_columns = len(header_list)
             matched = []
             no_match = []
             for line in lines[1:]:
-                line = line.replace(',', '')
-
+                if not line[0].isalpha():
+                    continue
+                line = re.sub(r'\s*\((.{0,4}?)\)\s*', '    ', line)
+                line = re.sub(r'[^\w\s]', '', line)
+                line = line.strip()
+                # print(line)
                 # Extracting country from line
-                country = extract_country_from_row(line)
+                country = extract_country_from_line(line).lower()
                 # Extracting amounts from line
                 amounts = line.replace(country, '').strip()
 
@@ -96,39 +110,15 @@ if __name__ == "__main__":
                 # Filtering amounts
                 amounts = re.sub(r'\s*\((.*?)\)\s*', '', amounts)
                 amounts = re.sub(r'[^\d\s]', '', amounts).strip()
-                figures = amounts.split()
-                if len(figures) == (no_of_columns-1) * 2:
-                    figures = [figures[i] + figures[i + 1] for i in range(0, len(figures), 2)]
-                    amounts = ' '.join(figures)
-                elif len(figures) > (no_of_columns-1):
-                    for i in reversed(range(len(figures))):
-                        if len(figures[i]) == 3 and len(figures[i-1]) == 1:
-                            figures[i-1] += figures[i]
-                            figures.pop(i)
-                        elif len(figures[i]) == 3 and len(figures[i-1]) == 2:
-                            if len(figures) > (no_of_columns-1):
-                                figures[i-1] += figures[i]
-                                figures.pop(i)
-                        else:
-                            max_len = len(max(figures, key=len))
-                            if len(figures[i]) < max_len and len(figures[i - 1]) < max_len:
-                                if len(figures) > (no_of_columns-1):
-                                    figures[i - 1] += figures[i]
-                                    figures.pop(i)
-                    amounts = ' '.join(figures)
-
-                while len(figures) < (no_of_columns-1):
-                    figures.insert(0, '???')
-                    amounts = ' '.join(figures)
+                amounts = join_figures_into_numbers(amounts, no_of_columns)
 
                 fields = [country] + amounts.split()
                 if len(fields) == no_of_columns:
                     matched.append(','.join(fields))
                 else:
                     no_match.append(' '.join(fields))
-                    print(figures, '---', len(figures), '---', (no_of_columns-1), file.name, country)
+                    print(amounts, '---', len(amounts.split()), '---', (no_of_columns-1), file.name, country)
             text = ','.join(header_list) + '\n' + '\n'.join(matched) + '\n' + '\n'.join(no_match)
-            # text = ','.join(header_list) + '\n' + '\n'.join(matched)
             with open(f'input-data/text-files/after-cleaning/{file.name[:-4]}.csv', 'w') as f_w:
                 f_w.write(text)
 
@@ -136,4 +126,4 @@ if __name__ == "__main__":
 
     # print(sorted(ultimate_countries_list))
     print(len(ultimate_countries_list))
-
+    print(ultimate_countries_list)
