@@ -1,6 +1,22 @@
 import re
 
 
+def extract_header(line: str):
+    header = line.replace('%', '4')
+    header = re.sub(r'[i{]', '1', header)
+    header = re.sub(r'[^\d\s]', ' ', header).strip().split()
+    for i in range(len(header)):
+        if len(header[i]) == 8:
+            header.insert(i + 1, header[i][4:])
+            header[i] = header[i][0:4]
+    header = 'Country ' + ' '.join(header)
+    return header
+
+
+def is_element_in_string(string, string_list):
+    return any(element in string for element in string_list)
+
+
 def jaccard_similarity(str1, str2):
     set1 = set(str1)
     set2 = set(str2)
@@ -33,18 +49,18 @@ def is_row_valid(row: str):
         return False
 
 
-def extract_country_from_row(row: str):
-    row = row.strip()
-    country = ''
-    for i in range(len(row)-2):
-        if row[i].isalpha():
-            country += row[i]
-        elif not row[i].isalpha() and row[i+1].isalpha():
-            country += row[i]
-        elif not row[i].isalpha() and row[i+2].isalpha():
-            country += row[i]
-        else:
-            break
+def extract_country_from_line(line: str):
+    line = line.replace('C.1.S.', 'C.I.S.')
+    line = line.replace('R.0.Korea', 'R.O.Korea')
+    country = re.sub(r'[^a-zA-Z\s]', ' ', line).strip()
+    country = re.sub(r'\b(\w) \b', r'\1', country)
+    country = re.sub(r'\b[a-zA-Z]\b', '', country)
+    country = re.sub(r'\b\w*?(\w)\1{2,}\w*\b', '', country)
+
+    # Use re.split() with a regular expression
+    country = re.split(r'\s{3,}', country)[0]
+    country = country.strip()
+
     return country
 
 

@@ -6,7 +6,7 @@ from pathlib import Path
 pytesseract.pytesseract.tesseract_cmd = r'/Users/Robert/miniconda3/envs/sm/bin/tesseract'
 
 # Path PDF file
-pdf_directory = 'input-data/tables-in-pdf'
+pdf_directory = 'input-data/tables-in-pdf/cropped'
 files = Path(pdf_directory).glob('*.pdf')
 
 # Path txt files
