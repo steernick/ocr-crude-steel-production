@@ -31,8 +31,10 @@ def find_similar_words_jaccard(input_word, word_list, threshold: float):
     return similar_words
 
 
-def similar_words_with_jaccard_similarity(input_word, word_list):
+def similar_words_with_jaccard_similarity(input_word, word_list, threshold_start=0.0, threshold_end=1.0):
     similar_words = {word: round(jaccard_similarity(input_word, word), 3) for word in word_list}
+    similar_words = dict(filter(lambda item: threshold_start <= item[1] <= threshold_end, similar_words.items()))
+    similar_words = dict(sorted(similar_words.items(), key=lambda item: item[1], reverse=True))
     return similar_words
 
 

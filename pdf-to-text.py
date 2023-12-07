@@ -12,17 +12,14 @@ files = Path(pdf_directory).glob('*.pdf')
 # Path txt files
 txt_directory = 'input-data/text-files'
 
+# Custom configuration of pytesseract
+custom_config = r'--oem 3 --psm 6 -c preserve_interword_spaces=1'
+
 # Convert all PDFs in directory to images using pdf2image
 # Extract text using pytesseract and save it into separate .txt files
-
 for file in files:
     images = convert_from_path(file)
     for image in images:
-        text = pytesseract.image_to_string(image, config='--psm 6')
+        text = pytesseract.image_to_string(image, config=custom_config)
         with open(f'input-data/raw-text-files/{file.name[-8:-4]}.txt', 'a') as f:
             f.write(text)
-'''
-def tesseract_pdf_to_txt(pdf_path: str | PathLike[str],
-                         output_folder = str | PathLike[str]):
-                         
-'''
