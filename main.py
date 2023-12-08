@@ -14,7 +14,7 @@ if __name__ == "__main__":
     with open('input-data/countries_correct_list.txt', 'r') as f_clc:
         lines = f_clc.readlines()
         countries_correct_list = [line.strip() for line in lines if line.strip()]
-
+    count = 0
     for file in files:
         with open(file, 'r') as f:
             lines = f.readlines()
@@ -22,14 +22,19 @@ if __name__ == "__main__":
             header_list = header.split()
             no_of_columns = len(header_list) - 1
             csv_fields_list = []
+        # if file.name == '1997.txt':
+        #     print(*lines)
             for line in lines[1:]:
                 # Extracting country from line
-                if line[0].isalpha():
+                if not line[0].isnumeric():
                     country = extract_country_from_line(line)
                 country = country.casefold()
 
                 # Extracting amounts from line
-                amounts = line.lower().replace(country, '').strip()
+                if line.strip()[-4:] == header[-4:]:
+                    continue
+                else:
+                    amounts = line.lower().replace(country, '').strip()
 
                 # Filtering, cleaning and repairing amounts:
                 # replacing all non-digits and non-spaces with space
@@ -80,24 +85,33 @@ if __name__ == "__main__":
 
                 # Filtering country
                 country = country.replace('  ', ' ')
-
                 country_similar = find_similar_words_jaccard(country, countries_correct_list, 0.85)
                 if country in countries_correct_list:
                     pass
                 elif country in countries_mapping:
                     country = countries_mapping[country]
                 elif country not in countries_correct_list and country_similar:
-                    country_similar = country_similar[0]
+                    # print(country, country_similar)
+                    country = country_similar[0]
                 else:
                     country = '???'
 
-                country = country.title()
+                if country in ('ussr', 'cis'):
+                    country = country.upper()
+                else:
+                    country = country.title()
 
                 # Merging corrected data into csv format
                 if country != '???' and len(amounts.split()) == no_of_columns:
                     csv_fields = country + ',' + ','.join(amounts.split())
                     csv_fields_list.append(csv_fields)
+                # else:
+                #     print(country, no_of_columns, amounts, file.name)
             # Saving corrected csv files
             text_csv = ','.join(header_list) + '\n' + '\n'.join(csv_fields_list)
+            # for line in text_csv.splitlines():
+            #     if text_csv.count(line.split(',')[0]) > 1:
+            #         print(line.split(',')[0], file.name)
             with open(f'input-data/after-cleaning/{file.name[:-4]}.csv', 'w') as f_w:
                 f_w.write(text_csv)
+    print(count)

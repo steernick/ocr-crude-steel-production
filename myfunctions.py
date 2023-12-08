@@ -9,6 +9,8 @@ def extract_header(line: str):
         if len(header[i]) == 8:
             header.insert(i + 1, header[i][4:])
             header[i] = header[i][0:4]
+        elif header[i] == '1783':
+            header[i] = '1983'
     header = 'Country ' + ' '.join(header)
     return header
 

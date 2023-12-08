@@ -17,7 +17,7 @@ for file in files:
         lines = [line for line in lines if len(line) > 35]
         lines = [line for line in lines if not is_element_in_string(line.lower(), unwanted_str_list)]
         for line in lines[1:]:
-            if line[0].isalpha():
+            if not line[0].isnumeric():
                 country = extract_country_from_line(line).lower()
             if len(country) > 2:
                 countries_list.append(country)
