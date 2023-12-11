@@ -17,18 +17,12 @@ for file in files:
 # Save the merged dataframe to a new CSV file
 # merged_df = merged_df[sorted(merged_df.columns)]
 merged_df = merged_df.drop_duplicates()
+df_2011_17 = pd.read_csv(f'{txt_directory}/2019.csv', usecols=[0, 3, 4, 5, 6, 7, 8, 9])
+merged_df = pd.merge(merged_df, df_2011_17, on="Country", how='outer')
 merged_df.sort_index(axis=1, inplace=True)
 merged_df.insert(0, 'Country', merged_df.pop('Country'))
 merged_df.to_csv('merged_result.csv', index=False)
 
-# for file in files:
-#
-#     df = pd.read_csv(file, delimiter=',', on_bad_lines='warn')
-#     # df_all = pd.concat([df_all, df])
-#     df_all = pd.merge(df_all, df, how='outer')
-#     df_all.drop_duplicates(inplace=True, keep=False, ignore_index=True)
-
-# merged_df = merged_df.reindex(sorted(merged_df.columns), axis=1)
 
 # pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
