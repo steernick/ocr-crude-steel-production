@@ -1,8 +1,5 @@
 # OCR-ekstrakcja danych dotyczących produkcji stali z tabel z plików .pdf
-___
-___
 ## Cel i motywacje:
-___
 Niniejszy projekt miał na celu pozyskanie danych o wysokości rocznej produkcji stali (crude steel)  
 w poszczególnych krajach w latach 1951 - 2022.  
 
@@ -16,7 +13,6 @@ Jedyne dostępne dane zamieszczone były w formie tabel w plikach pdf (w większ
 * dla lat **1951 - 1968** - dane z [roczników statystycznych](https://unstats.un.org/UNSDWebsite/Publications/StatisticalYearbookPastIssue/) **ONZ**
 
 ## Użyte technologie:
-___
 * _Python_ w wersji 3.11.5
 * _Pytesseract_ w wersji 0.3.10
 * _pdf2image_ w wersji 1.16.3
@@ -24,7 +20,7 @@ ___
 * na początkowym etapie w celu przygotowania plików użyłem programu _GIMP_ w wersji 2.10.36
 
 ## Przebieg:
-___
+
 #### Projekt podzieliłem na kilka etapów:
 
 ### Etap 1.
