@@ -141,7 +141,7 @@ if __name__ == "__main__":
     txt_directory = 'input-data/after-first-filter'
     files = Path(txt_directory).glob('*.txt files')
 
-    # Loading .json with mapping of countries
+    # Loading .json file with mapping of countries
     with open('input-data/countries_mapping.json', 'r') as json_file:
         countries_mapping = json.load(json_file)
 
