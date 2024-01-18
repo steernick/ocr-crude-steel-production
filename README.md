@@ -59,9 +59,11 @@ Jest to główny etap obróbki plików tekstowych, którego celem ma być powsta
 
 W pliku _main.py_ na początku umieszczone są definicje funkcji użytych zarówno w tym pliku, jak i w innych.  
 
-Następnie zostają wczytana lista państw oraz z pliku w formacie JSON słownik z mapowaniem występujących w tekście ciągów 
-znaków, które powinny być zamienione na właściwą nazwę państwa. Słownik ten stworzyłem ręcznie w trakcie udoskonalania 
-programu, w celu ostatecznego poprawienia ciągów znaków, które nie zostały automatycznie poprawione w użytych w programie algorytmach.  
+Następnie zostają wczytana [lista państw](https://github.com/steernick/ocr-crude-steel-production/blob/master/examples/countries_correct_list.txt) 
+oraz z [plik w formacie JSON](https://github.com/steernick/ocr-crude-steel-production/blob/master/examples/countries_mapping.json) 
+zawierający słownik z mapowaniem występujących w tekście ciągów znaków, które powinny być zamienione na właściwą nazwę 
+państwa. Słownik ten stworzyłem ręcznie w trakcie udoskonalania programu, w celu ostatecznego poprawienia ciągów znaków, 
+które nie zostały automatycznie poprawione w użytych w programie algorytmach.  
 
 Główna część programu składa się z dwóch pętli 'for', zagnieżdżonych jedna w drugiej. Zewnętrzna iteruje pliki tekstowe, 
 znajdujące się folderze, wewnętrzna linie w każdym z tych plików. Każda iteracja pętli zewnętrznej składa się z 
@@ -78,7 +80,7 @@ Później następuje przejście do pętli wewnętrznej, gdzie wykonywane są nas
 * obróbka ciągów liczbowych w celu wyodrębnienia konkretnych wartości z pomocą wzorów wyrażeń regularnych z biblioteki _re_
 oraz instrukcji warunkowych.
 * obróbka ciągu znaków w celu wyodrębnienia poprawnej nazwy państwa z użyciem wcześniej zaimportowanych listy państw, 
-słownika mapującego oraz funkcji stworzonej z wykorzystaniem współczynnika [Jaccarda](https://pl.wikipedia.org/wiki/Indeks_Jaccarda).
+słownika mapującego oraz funkcji stworzonej z wykorzystaniem [współczynnika Jaccarda](https://pl.wikipedia.org/wiki/Indeks_Jaccarda).
 * na końcu uzyskane pola danych łączone są przecinkami w wiersze a te dodawane do zmiennej `csv_fields_list`.  
 
 Następnie wykonywane jest przejście do pętli zewnętrznej, gdzie ostatnią czynnością jest połączenie nagłówka z listą wierszy
